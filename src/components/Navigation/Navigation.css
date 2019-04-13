@@ -1,0 +1,30 @@
+.navigation
+{
+  padding: 0 15px;
+}
+
+.navigation .navigation-links
+{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.navigation .navigation-links > li
+{
+  list-style: none;
+  margin-right: 10px;
+}
+
+.navigation .navigation-links > li:last-child
+{
+  list-style: none;
+  margin-right: 0;
+}
+
+.navigation .navigation-links > li > a
+{
+  color: white;
+  font-size: 18px;
+  text-decoration: none;
+}
