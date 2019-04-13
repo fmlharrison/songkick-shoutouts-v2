@@ -6,6 +6,7 @@ import { withAuthentication } from "../Session";
 
 import * as routes from "../../constants/routes";
 
+import profileIcon from "../../images/profile-icon.png";
 import "./Navigation.css";
 
 class Navigation extends Component {
@@ -13,6 +14,10 @@ class Navigation extends Component {
     if (this.props.authUser) {
       return (
         <ul className="navigation-links">
+          <li className="user-name">
+            <img src={profileIcon} className="profile-icon"/>
+            <span>{this.props.authUser.displayName}</span>
+            </li>
           <li>
             <Link to={routes.LANDING}>Home</Link>
           </li>

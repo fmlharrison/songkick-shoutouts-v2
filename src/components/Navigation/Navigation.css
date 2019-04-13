@@ -10,6 +10,21 @@
   align-items: center;
 }
 
+.navigation .navigation-links .user-name
+{
+  color: white;
+  font-size: 18px;
+  display: flex;
+  align-content: center;
+}
+
+.navigation .navigation-links .profile-icon
+{
+  height: 21px;
+  width: 21px;
+  margin-right: 7px;
+}
+
 .navigation .navigation-links > li
 {
   list-style: none;
