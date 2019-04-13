@@ -1,16 +1,13 @@
 version: '3.5'
 
 services:
-
   songkick-shoutouts:
     container_name: songkick-shoutouts
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: ./
     volumes:
-      - '.:/usr/src/app'
+      - './:/usr/src/app'
       - '/usr/src/app/node_modules'
     ports:
-      - '8080:8080'
+      - '8080:3000'
     environment:
       - NODE_ENV=development
