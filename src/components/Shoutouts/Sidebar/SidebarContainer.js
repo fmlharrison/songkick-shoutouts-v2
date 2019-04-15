@@ -81,10 +81,6 @@ export class SidebarContainer extends Component {
   }
 }
 
-SidebarContainer.propTypes = {
-  updateShoutouts: PropTypes.func.isRequired
-};
-
 export default compose(
   withAuthentication,
   withFirebase

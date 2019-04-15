@@ -61,7 +61,7 @@ class ShoutoutsContainer extends Component {
           />
         </div>
         {this.state.showSideBar ? (
-          <Sidebar updateShoutouts={this.updateShoutouts} />
+          <Sidebar />
         ) : null}
       </div>
     );
