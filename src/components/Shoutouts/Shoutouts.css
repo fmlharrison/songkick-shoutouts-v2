@@ -27,7 +27,11 @@
   width: 38px;
   border: 1px solid black;
   border-radius: 5px;
+}
 
+.main .shout-outs .megaphone-icon.hidden
+{
+  display: none;
 }
 
 .main .shout-outs .shoutout-container

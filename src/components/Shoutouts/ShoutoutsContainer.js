@@ -45,6 +45,14 @@ class ShoutoutsContainer extends Component {
     this.setState({ showSideBar: !sideBarState })
   };
 
+  showToggleIcon = () => {
+    if (this.state.showSideBar) {
+      return "megaphone-icon hidden"
+    } else {
+      return "megaphone-icon"
+    }
+  }
+
   render() {
     return (
       <div className="main">
@@ -53,7 +61,7 @@ class ShoutoutsContainer extends Component {
             return <Shoutouts shoutout={shout} />;
           })}
           <input
-            className="megaphone-icon"
+            className={this.showToggleIcon()}
             type="image"
             src={shoutoutIcon}
             alt="Send a shoutout"
@@ -61,7 +69,7 @@ class ShoutoutsContainer extends Component {
           />
         </div>
         {this.state.showSideBar ? (
-          <Sidebar />
+          <Sidebar showSideBar={(isShown) => ( this.setState({ showSideBar: isShown }))} />
         ) : null}
       </div>
     );

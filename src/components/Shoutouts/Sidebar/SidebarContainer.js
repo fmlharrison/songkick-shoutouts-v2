@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { compose } from "recompose";
 
 import "./Sidebar.css";
+import shoutoutIcon from "../../../images/icon-megaphone.png";
 import Sidebar from "./Sidebar";
 
 import { withFirebase } from "../../Firebase";
@@ -66,9 +67,20 @@ export class SidebarContainer extends Component {
     this.saveShoutout(shoutOut);
   };
 
+  closeSideBar = () => {
+    this.props.showSideBar(false)
+  }
+
   render() {
     return (
       <div className="sidebar">
+        <input
+          className="megaphone-icon"
+          type="image"
+          src={shoutoutIcon}
+          alt="Close sidebar"
+          onClick={this.closeSideBar}
+        />
         <Sidebar
           usersList={this.state.usersList}
           submitNewShoutout={this.saveSubmittedShoutout}
