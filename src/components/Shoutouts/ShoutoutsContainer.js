@@ -8,6 +8,7 @@ import { withFirebase } from "../Firebase";
 
 import "./Shoutouts.css";
 import shoutoutIcon from "../../images/icon-megaphone.png";
+import pinkLogo from "../../images/songkick_badge_pink.png";
 
 class ShoutoutsContainer extends Component {
   constructor(props) {
@@ -25,6 +26,50 @@ class ShoutoutsContainer extends Component {
     });
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.shoutOuts.length === 0) return;
+
+    const isNewShoutout =
+      this.state.shoutOuts.length > prevState.shoutOuts.length;
+    const newShoutout = this.state.shoutOuts[0];
+
+    if (isNewShoutout) {
+      return this.notifyUser(newShoutout);
+    }
+  }
+
+  notifyUser = shoutout => {
+    const title = `${shoutout.recipient} got a shoutout from ${
+      shoutout.shouter
+    }!`;
+    const notificationMessage = shoutout.message;
+    const options = {
+      body: notificationMessage,
+      icon: pinkLogo
+    };
+
+    let notification;
+    if (!("Notification" in window)) {
+      console.log("This browser does not support desktop notification");
+      return;
+    } else if (Notification.permission === "granted") {
+      notification = new Notification(title, options);
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then(function(permission) {
+        if (permission === "granted") {
+          notification = new Notification(title, options);
+        } else {
+          return;
+        }
+      });
+    }
+
+    notification.onclick = function(e) {
+      window.focus();
+      e.target.close();
+    };
+  };
+
   formatShoutouts = data => {
     if (!data) return [];
     return Object.values(data);
@@ -41,17 +86,17 @@ class ShoutoutsContainer extends Component {
   };
 
   toggleSideBar = () => {
-    const sideBarState = this.state.showSideBar
-    this.setState({ showSideBar: !sideBarState })
+    const sideBarState = this.state.showSideBar;
+    this.setState({ showSideBar: !sideBarState });
   };
 
   showToggleIcon = () => {
     if (this.state.showSideBar) {
-      return "megaphone-icon hidden"
+      return "megaphone-icon hidden";
     } else {
-      return "megaphone-icon"
+      return "megaphone-icon";
     }
-  }
+  };
 
   render() {
     return (
@@ -69,7 +114,9 @@ class ShoutoutsContainer extends Component {
           />
         </div>
         {this.state.showSideBar ? (
-          <Sidebar showSideBar={(isShown) => ( this.setState({ showSideBar: isShown }))} />
+          <Sidebar
+            showSideBar={isShown => this.setState({ showSideBar: isShown })}
+          />
         ) : null}
       </div>
     );
