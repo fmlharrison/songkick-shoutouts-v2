@@ -114,9 +114,11 @@ class ShoutoutsContainer extends Component {
           />
         </div>
         {this.state.showSideBar ? (
-          <Sidebar
-            showSideBar={isShown => this.setState({ showSideBar: isShown })}
-          />
+          <div className="sidebar-wrapper">
+            <Sidebar
+              showSideBar={isShown => this.setState({ showSideBar: isShown })}
+            />
+          </div>
         ) : null}
       </div>
     );

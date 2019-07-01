@@ -24,8 +24,11 @@ export class SidebarContainer extends Component {
       .users()
       .once("value")
       .then(snapshot => {
-        const usersList = this.formatUsers(snapshot.val());
-        return this.setState({ usersList });
+        const users = this.formatUsers(snapshot.val());
+        const selectableUsers = users.filter(
+          user => user.value !== this.props.authUser.displayName
+        );
+        return this.setState({ usersList: selectableUsers });
       });
   }
 
@@ -68,8 +71,8 @@ export class SidebarContainer extends Component {
   };
 
   closeSideBar = () => {
-    this.props.showSideBar(false)
-  }
+    this.props.showSideBar(false);
+  };
 
   render() {
     return (
