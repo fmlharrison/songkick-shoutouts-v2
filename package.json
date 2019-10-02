@@ -9,7 +9,7 @@
     "start": "webpack-dev-server",
     "build": "npm run clean && npm run compile",
     "clean": "rm -rf ./build/index.bundle.js",
-    "compile": "NODE_ENV=production webpack --config ./webpack.config.js --progress",
+    "compile": "webpack -p --mode production --config ./webpack.config.js ",
     "electron": "electron .",
     "dev": "nf start"
   },
