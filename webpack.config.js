@@ -8,7 +8,6 @@ module.exports = {
     path: path.resolve(__dirname, "build"),
     filename: "index.bundle.js"
   },
-  mode: "development",
   devtool: "inline-source-map",
   devServer: {
     contentBase: "./build",
