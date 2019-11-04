@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { compose } from "recompose";
+import moment from "moment";
 
 import Shoutouts from "./Shoutouts";
 import Sidebar from "./Sidebar/SidebarContainer";
@@ -15,6 +16,7 @@ class ShoutoutsContainer extends Component {
     super(props);
     this.state = {
       shoutOuts: [],
+      groupedShoutouts: {},
       showSideBar: false
     };
   }
@@ -22,7 +24,10 @@ class ShoutoutsContainer extends Component {
   componentDidMount() {
     this.props.firebase.shoutoutsDb().on("value", snapshot => {
       const data = this.formatShoutouts(snapshot.val());
-      this.setState({ shoutOuts: this.orderShoutouts(data) });
+      this.setState({
+        shoutOuts: this.orderShoutouts(data),
+        groupedShoutouts: this.dateOrderShoutouts(data)
+      });
     });
   }
 
@@ -39,9 +44,7 @@ class ShoutoutsContainer extends Component {
   }
 
   notifyUser = shoutout => {
-    const title = `${shoutout.recipient} got a shoutout from ${
-      shoutout.shouter
-    }!`;
+    const title = `${shoutout.recipient} got a shoutout from ${shoutout.shouter}!`;
     const notificationMessage = shoutout.message;
     const options = {
       body: notificationMessage,
@@ -79,6 +82,18 @@ class ShoutoutsContainer extends Component {
     this.setState({ shoutOuts: this.orderShoutouts(shoutouts) });
   };
 
+  dateOrderShoutouts = data => {
+    let dateOrderedShoutouts = {};
+    data.forEach(shoutout => {
+      const date = moment(shoutout.createdAt);
+      const formattedDate = date.format("L");
+      dateOrderedShoutouts[formattedDate]
+        ? dateOrderedShoutouts[formattedDate].push(shoutout)
+        : (dateOrderedShoutouts[formattedDate] = [shoutout]);
+    });
+    return dateOrderedShoutouts;
+  };
+
   orderShoutouts = data => {
     return data.sort((a, b) => {
       return b.createdAt - a.createdAt;
@@ -102,9 +117,18 @@ class ShoutoutsContainer extends Component {
     return (
       <div className="main">
         <div className="shout-outs">
-          {this.state.shoutOuts.map(shout => {
-            return <Shoutouts shoutout={shout} />;
-          })}
+          {Object.entries(this.state.groupedShoutouts).map(
+            ([key, value]) => {
+              return (
+                <div>
+                  <h3>{key}</h3>
+                  {value.map(shout => {
+                    return <Shoutouts shoutout={shout} />;
+                  })}
+                </div>
+              );
+            }
+          )}
           <input
             className={this.showToggleIcon()}
             type="image"
