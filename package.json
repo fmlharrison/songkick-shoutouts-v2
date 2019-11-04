@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack-dev-server",
-    "build": "yarn clean && yarn compile",
+    "build": "yarn compile",
     "clean": "rm -rf ./build/index.bundle.js",
     "compile": "webpack -p --mode production --config ./webpack.config.js ",
     "electron": "electron .",
