@@ -1,102 +1,104 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { useState, useEffect } from "react";
 import { compose } from "recompose";
+import Select from "react-select";
+import useInput from "../../../hooks/useInput";
 
 import "./Sidebar.css";
 import shoutoutIcon from "../../../images/icon-megaphone.png";
-import Sidebar from "./Sidebar";
 
 import { withFirebase } from "../../Firebase";
 import { withAuthentication } from "../../Session";
 
-export class SidebarContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      usersList: [],
-      recipient: "",
-      message: ""
-    };
-  }
+const SidebarContainer = props => {
+  const [usersList, setUserList] = useState([]);
+  const [recipient, setRecipient] = useState("");
+  const { value: message, bind: bindMessage, reset: resetMessage } = useInput("");
 
-  componentDidMount() {
-    this.props.firebase
+  useEffect(() => {
+    const formatUsers = usersData => {
+      if (!usersData) return [];
+      const usersIds = Object.keys(usersData);
+      return usersIds.map(id => {
+        return {
+          value: usersData[id].displayName,
+          label: usersData[id].displayName
+        };
+      });
+    };
+
+    props.firebase
       .users()
       .once("value")
       .then(snapshot => {
-        const users = this.formatUsers(snapshot.val());
+        const users = formatUsers(snapshot.val());
         const selectableUsers = users.filter(
-          user => user.value !== this.props.authUser.displayName
+          user => user.value !== props.authUser.displayName
         );
-        return this.setState({ usersList: selectableUsers });
+        setUserList(selectableUsers);
       });
-  }
+  }, []);
 
-  formatUsers = usersData => {
-    if (!usersData) return [];
+  const saveShoutout = () => {
+    event.preventDefault();
 
-    const usersIds = Object.keys(usersData);
-    return usersIds.map(id => {
-      return {
-        value: usersData[id].displayName,
-        label: usersData[id].displayName
-      };
-    });
-  };
+    const newRef = props.firebase.shoutoutsDb().push();
+    const shoutOut = {
+      id: newRef.key,
+      recipient: recipient,
+      message: message,
+      shouter: props.authUser.displayName,
+      createdAt: props.firebase.databaseTimeStamp()
+    };
 
-  updateForm = (type, value) => {
-    this.setState({ [type]: value });
-  };
-
-  saveShoutout = data => {
-    const newRef = this.props.firebase.shoutoutsDb().push();
-    data.createdAt = this.props.firebase.databaseTimeStamp();
-    data.id = newRef.key;
-
-    newRef.set(data, error => {
+    newRef.set(shoutOut, error => {
       if (error) {
         console.log(error);
       } else {
-        this.setState({
-          recipient: "",
-          message: ""
-        });
+        setRecipient("");
+        resetMessage();
       }
     });
   };
 
-  saveSubmittedShoutout = shoutOut => {
-    shoutOut.shouter = this.props.authUser.displayName;
-    this.saveShoutout(shoutOut);
+  const closeSideBar = () => {
+    props.showSideBar(false);
   };
 
-  closeSideBar = () => {
-    this.props.showSideBar(false);
-  };
-
-  render() {
-    return (
-      <div className="sidebar">
-        <input
-          className="megaphone-icon"
-          type="image"
-          src={shoutoutIcon}
-          alt="Close sidebar"
-          onClick={this.closeSideBar}
-        />
-        <Sidebar
-          usersList={this.state.usersList}
-          submitNewShoutout={this.saveSubmittedShoutout}
-          handleFormInput={this.updateForm}
-          recipient={this.state.recipient}
-          message={this.state.message}
-        />
+  return (
+    <div className="sidebar">
+      <input
+        className="megaphone-icon"
+        type="image"
+        src={shoutoutIcon}
+        alt="Close sidebar"
+        onClick={closeSideBar}
+      />
+      <div>
+        <h1>Got a Shoutout for someone?</h1>
+        <form onSubmit={saveShoutout} className="form">
+          <Select
+            options={usersList}
+            name="recipient"
+            className="form-item recipient"
+            placeholder="For who?"
+            isClearable
+            onChange={option => {
+              const rec = option ? option.value : ""
+              setRecipient(rec);
+            }}
+          />
+          <textarea
+            type="text"
+            className="form-item message"
+            name="message"
+            placeholder="What's your shoutout?"
+            {...bindMessage}
+          />
+          <input type="submit" className="form-item submit" value="Shout it!" />
+        </form>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
-export default compose(
-  withAuthentication,
-  withFirebase
-)(SidebarContainer);
+export default compose(withAuthentication, withFirebase)(SidebarContainer);
